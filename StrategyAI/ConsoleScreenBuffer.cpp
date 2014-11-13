@@ -30,6 +30,8 @@ bool ConsoleScreenBuffer::Initialise()
 	cursor.bVisible = false;
 	SetConsoleCursorInfo(consoleHandle, &cursor);
 	SetConsoleScreenBufferSize(consoleHandle, bufferSize);
+	cursorPos = zero;
+	bufferChanged = true;
 
 	return true;
 }
@@ -41,10 +43,10 @@ void ConsoleScreenBuffer::ClearBuffer()
 			(*j) = 32;
 		}
 	}
-
 	for (int i = 0; i < currentTextBuffer.length(); ++i){
-		bufferArray[(i) / bufferSize.Y][(i) % bufferSize.X] = currentTextBuffer[i];
+		bufferArray[(i) / bufferSize.X][(i) % bufferSize.X] = currentTextBuffer[i];
 	}
+	bufferChanged = true;
 }
 
 void ConsoleScreenBuffer::FlipBuffers()
@@ -56,12 +58,21 @@ void ConsoleScreenBuffer::FlipBuffers()
 		}
 		std::cout << std::endl;
 	}
+	ClearBuffer();
+	bufferChanged = false;
 }
 
 void ConsoleScreenBuffer::ResetTextCursor()
 {
 	cursorPos = zero;
 	currentTextBuffer = std::string();
+	bufferChanged = true;
+}
+
+void ConsoleScreenBuffer::ClearText()
+{
+
+
 }
 
 bool ConsoleScreenBuffer::Render(Image& img, COORD loc)
@@ -70,9 +81,10 @@ bool ConsoleScreenBuffer::Render(Image& img, COORD loc)
 
 	for (int i = 0; i != arr.size(); i++) {
 		for (int j = 0; j != arr[i].size(); j++) {
-			bufferArray[loc.Y+j][loc.X+i] = arr[i][j];
+			bufferArray[loc.Y+i][loc.X+j] = arr[i][j];
 		}
 	}
+	bufferChanged = true;
 
 	return true;
 }
@@ -82,21 +94,22 @@ void ConsoleScreenBuffer::operator<<(const char* out)
 	int base = cursorPos.Y*bufferSize.X + cursorPos.X;
 
 	for (int i = 0; i < strlen(out); ++i){
-		bufferArray[(base+i)/bufferSize.Y][(base+i) % bufferSize.X] = out[i];
+		bufferArray[(base+i)/bufferSize.X][(base+i) % bufferSize.X] = out[i];
 	}
 	cursorPos.X = (base + strlen(out)) % bufferSize.X;
-	cursorPos.Y = (base + strlen(out)) / bufferSize.Y;
+	cursorPos.Y = (base + strlen(out)) / bufferSize.X;
 	currentTextBuffer.append(out);
-
+	bufferChanged = true;
 }
 
 void ConsoleScreenBuffer::operator<<(char out)
 {
 	int base = cursorPos.Y*bufferSize.X + cursorPos.X;
 
-	bufferArray[(base) / bufferSize.Y][(base) % bufferSize.X] = out;
+	bufferArray[(base) / bufferSize.X][(base) % bufferSize.X] = out;
 
 	cursorPos.X = (base + 1) % bufferSize.X;
-	cursorPos.Y = (base + 1) / bufferSize.Y;
+	cursorPos.Y = (base + 1) / bufferSize.X;
 	currentTextBuffer += out;
+	bufferChanged = true;
 }

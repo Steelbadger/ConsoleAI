@@ -16,6 +16,8 @@ public:
 	void ClearBuffer();
 	void FlipBuffers();
 	void ResetTextCursor();
+	void ClearText();
+	inline bool BufferChange(){ return bufferChanged; }
 
 	bool Render(Image& img, COORD loc);
 
@@ -28,5 +30,6 @@ private:
 	HANDLE consoleHandle;
 	COORD bufferSize;
 	COORD cursorPos;
+	bool bufferChanged;
 	static const COORD zero;
 };

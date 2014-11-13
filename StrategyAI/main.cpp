@@ -24,18 +24,21 @@ int main()
 	COORD nope = {10,5};
 
 	while(input != 27) {
-		buff.ClearBuffer();
 		if (_kbhit()) {
 			input = _getch();
 			buff << input;
-			if (input == '/n')
+			if (input == '\r')
 				buff.ResetTextCursor();
 		}
 		if (input == 'm') {
 			buff.Render(img, nope);
 			input = 0;
+		} else {
+//			buff.ClearBuffer();
 		}
-		buff.FlipBuffers();
+		if (buff.BufferChange()) {
+			buff.FlipBuffers();
+		}
 	}
 
 
