@@ -30,11 +30,9 @@ int main()
 			if (input == '\r')
 				buff.ResetTextCursor();
 		}
-		if (input == 'm') {
+		if (input == '#') {
 			buff.Render(img, nope);
 			input = 0;
-		} else {
-//			buff.ClearBuffer();
 		}
 		if (buff.BufferChange()) {
 			buff.FlipBuffers();

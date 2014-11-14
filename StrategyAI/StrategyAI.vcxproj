@@ -81,6 +81,7 @@
     <ClInclude Include="ConsoleScreenBuffer.h" />
     <ClInclude Include="Critter.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="TextWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleScreenBuffer.cpp" />
